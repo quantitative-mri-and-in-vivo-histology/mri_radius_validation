@@ -1,0 +1,7 @@
+antspynet>=0.2.9
+antspyx>=0.5.4
+pandas>=2.2.3
+psutil>=6.1.1
+numpy>=1.26.4
+git+https://github.com/Washington-University/gradunwarp.git
+

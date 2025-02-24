@@ -1,0 +1,12 @@
+{
+    "histology_scaling_factor": 1.0,
+    "d_0": 0.35,
+    "d_a_par": 0.35,
+    "d_e_par": null,
+    "d_e_perp": null,
+    "f_0": 0.41,
+    "f_im": 0.27,
+    "t_2_a": 29.3,
+    "t_2_e": 15.7,
+    "neurite_dispersion": 8.2
+}

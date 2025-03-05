@@ -65,4 +65,7 @@ protocol_optimization_rois_simulate.m  % Mimics experimental radius estimation f
 ---
 
 ## License
-This project is licensed under the **MIT License**. However, some files or code snippets are subject to different licenses (e.g., MPL 2.0, MIT, and custom licenses), as indicated in the respective source files.
+This project is licensed under the **MIT License**. However, some files or code snippets are subject to different licenses:
+- **MPL 2.0**: `code/simulation/estimate_r_eff_non_linear_fit.m`
+- **BSD-3-Clause**: `code/simulation/compute_lebedev_sphere.m`
+- **Non-commercial research-only license** (New York University): `code/simulation/compute_even_order_spherical_harmonics.m`

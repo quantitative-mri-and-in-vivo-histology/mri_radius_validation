@@ -4,7 +4,7 @@ This repository contains the code for the manuscript
 **"Towards MRI axon radius mapping in clinical settings: insights from MRI-scale histology and experimental validation".**
 
 ## Installation
-The code requires Python 3.x and MATLAB. Additionally, please ensure the following software is installed:
+The code requires Python 3.x and MATLAB. Additionally, please ensure the following software is installed (installation time: 1-2 hours):
 
 ### Python
 ```bash
@@ -29,9 +29,11 @@ These external tools must be installed and accessible in your system's `PATH`:
 
 ### Versions
 The code has been tested with the following versions:
+- Ubuntu 22.04.3 LTS
 - FSL 6.0.6.4
 - mrtix3 3.0.4
 - ants 2.4.3
+- c3d_affine_tool 1.1.0
 - MATLAB R2023b Update 8
 - MISST Toolbox 0.93
 - MODDI Toolbox 1.05
@@ -56,17 +58,21 @@ export MRV_DATA_PATH=/path/to/data
 ## Usage
 
 ### Processing of ex-vivo dMRI data
+To process the ex-vivo data, run 
 ```bash
 cd code
 python -m dwi_processing.process_ex_vivo_dataset.py ${MRV_DATA_PATH}/mri_ex_vivo/processed
 ```
+This can up to a day, largely due to NODDI fiber direction fitting.
 
 ### Processing of in-vivo dMRI data
+To process and regiser the in-vivo data, run 
 ```bash
 cd code
 python -m dwi_processing.process_in_vivo_dataset.py ${MRV_DATA_PATH}/mri_in_vivo/processed
 python -m dwi_processing.register_in_vivo_dataset.py ${MRV_DATA_PATH}/mri_in_vivo/processed
 ```
+This can take a few hours.
 
 ### Analyses presented in the manuscript
 The code contains all scripts to reproduce the analyses and figures presented in the manuscript, located under `code/figures`. 

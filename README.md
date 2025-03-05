@@ -37,6 +37,7 @@ The code has been tested with the following versions:
 - MATLAB R2023b Update 8
 - MISST Toolbox 0.93
 - MODDI Toolbox 1.05
+- nifti_matlab (Commit: [a7d73bf4cca1e1cb5a956a236fb6bd81b57b740e](https://github.com/NIFTI-Imaging/nifti_matlab/tree/a7d73bf4cca1e1cb5a956a236fb6bd81b57b740e))
 - python 3.10.16
 - antspynet 0.2.9
 - gradunwarp 1.2.3

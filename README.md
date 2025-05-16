@@ -64,7 +64,7 @@ To process the ex-vivo data, run
 cd code
 python -m dwi_processing.process_ex_vivo_dataset.py ${MRV_DATA_PATH}/mri_ex_vivo/processed
 ```
-This can up to a day, largely due to NODDI fiber direction fitting.
+This can take up to a day, largely due to NODDI fiber direction fitting.
 
 ### Processing of in-vivo dMRI data
 To process and regiser the in-vivo data, run 

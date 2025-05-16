@@ -1,6 +1,5 @@
 % ========================================================================
-% Plot sampling statistics of our dataset versus existing corpus callosum
-% datasets.
+% Plot sampling statistics of our dataset versus existing ones.
 % ========================================================================
 
 % load data
@@ -36,60 +35,47 @@ study_names = [
     "Aboiitz et al.";
     "Caminiti et al."; 
     "Liewald et al.";
+    "Barakovic et al.";
     "Ours"];
-donors_per_dataset = [1, 3, 2, 2];
-rois_per_donors = [5, 4, 3, mean(samples_per_donor_ours)];
-areas_per_roi = [45*45*10^-6, 112*87*10^(-6), 13*13*8*10^(-6), 8];
-axons_per_roi = [300, 1750, 300, 10^6];
+donors_per_dataset = [1, 3, 2, 1, 2];
+rois_per_donors = [5, 4, 3, 11, mean(samples_per_donor_ours)];
+rois = donors_per_dataset.*rois_per_donors;
+areas_per_roi = [45*45*10^-6, 112*87*10^(-6), 13*13*8*10^(-6), 0.0031, 8];
+axons_per_roi = [300, 1750, 300, 553, 10^6];
 
 % set up subplots
 fig_handle  = figure;
 set(fig_handle, get_default_figure_settings());
-set(gcf,'units','centimeters','position',[0, 0, 12.1, 5.3]);
-layout = tiledlayout(1, 3, ...
+set(gcf,'units','centimeters','position',[0, 0, 14.1, 5.3]);
+layout = tiledlayout(1, 2, ...
     "TileSpacing", "loose", ...
     "Padding", "tight");
 color_order = get_default_color_order();
-color_order = [color_order; 0,0.47,0.84];
-plot_axes = gobjects(1,3);
+color_order([4 5],:) = color_order([5 4],:);
+% color_order = [color_order; 0,0.47,0.84];
+plot_axes = gobjects(1,2);
 plot_axes(1) = nexttile(layout);
 plot_axes(2) = nexttile(layout);
-plot_axes(3) = nexttile(layout);
 
 for study_index = 1:length(study_names)
-   
-    % plot donors per dataset
+  
+    % plot rois 
     axes(plot_axes(1));
     hold on;
     bar(categorical(study_names(study_index)), ...
-        donors_per_dataset(study_index), ...
+        rois(study_index), ...
         'FaceColor', color_order(study_index,:), ...
         'LineWidth', 1,...
-        'DisplayName', study_names(study_index));
-    ylabel("donors", 'interpreter', 'latex');
-    yticks([0:1:max(donors_per_dataset)]);
+         'DisplayName', study_names(study_index));
+    ylabel("ROIs", 'Interpreter', 'latex');
     xlabel("dataset", 'Interpreter', 'latex');
-    ylim([0, max(donors_per_dataset)+0.1]);
-    xticklabels([]);
-    pbaspect([1 1 1]);
-    box on;
-    
-    % plot rois per donor
-    axes(plot_axes(2));
-    hold on;
-    bar(categorical(study_names(study_index)), ...
-        rois_per_donors(study_index), ...
-        'FaceColor', color_order(study_index,:), ...
-        'LineWidth', 1);
-    ylabel("ROIs per donor", 'Interpreter', 'latex');
-    xlabel("dataset", 'Interpreter', 'latex');
-    ylim([0, max(rois_per_donors)+0.5]);
+    ylim([0, max(rois)+2.5]);
     xticklabels([]);
     pbaspect([1 1 1]);
     box on;
 
     % plot area/axon count per roi
-    axes(plot_axes(3));
+    axes(plot_axes(2));
     hold on;
     xlim([0 1.5*10^1]);
     ylim([0 5*10^6]);
@@ -111,8 +97,9 @@ end
 
 % add global dataset legend
 axes(plot_axes(1));
-lgd = legend('NumColumns', 4, ...
-    'Interpreter', 'latex');
+lgd = legend('NumColumns', 5, ...
+    'Interpreter', 'latex', ...
+    'FontSize', 7.8);
 lgd.Layout.Tile = "North";
 
 % save figure

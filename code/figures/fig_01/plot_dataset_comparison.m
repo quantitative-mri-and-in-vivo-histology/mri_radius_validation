@@ -32,7 +32,7 @@ for donor_index = 1:length(subject_ids)
         sum(roi_info_table.subject_id == subject_ids(donor_index));
 end
 study_names = [
-    "Aboiitz et al.";
+    "Aboitiz et al.";
     "Caminiti et al."; 
     "Liewald et al.";
     "Barakovic et al.";

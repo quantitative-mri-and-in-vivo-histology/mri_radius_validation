@@ -46,7 +46,7 @@ axons_per_roi = [300, 1750, 300, 553, 10^6];
 % set up subplots
 fig_handle  = figure;
 set(fig_handle, get_default_figure_settings());
-set(gcf,'units','centimeters','position',[0, 0, 14.1, 5.3]);
+set(gcf,'units','centimeters','position',[0, 0, 8, 5.3]);
 layout = tiledlayout(1, 2, ...
     "TileSpacing", "loose", ...
     "Padding", "tight");
@@ -85,7 +85,7 @@ for study_index = 1:length(study_names)
         'MarkerEdgeColor', 'k', ...
         'MarkerFaceColor', color_order(study_index,:), ...
         'MarkerSize', 7);
-    xlabel("area per ROI [$\mu$m$^2$]", 'Interpreter', 'latex');
+    xlabel("area per ROI [mm$^2$]", 'Interpreter', 'latex');
     ylabel("axons per ROI", 'Interpreter', 'latex');
     set(gca, 'XScale', 'log');
     set(gca, 'YScale', 'log');

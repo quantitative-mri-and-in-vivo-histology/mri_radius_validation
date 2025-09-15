@@ -266,8 +266,7 @@ for subject_index = 1:size(r_eff_map_in_vivo_experiments_per_subject, 1)
     r_eff_mri_mean_values = r_eff_mri_values_per_sub(:, subject_index);
     valid_idx = ~isnan(r_eff_mri_mean_values);
     r_eff_histo_mean_values = r_eff_reference_in_vivo';
-    r_eff_mri_mean_values = r_eff_mri_mean_values(valid_idx);
-    r_eff_histo_mean_values = r_eff_histo_mean_values(valid_idx);
+    r_eff_mri_mean_values(~valid_idx) = nan;
 
     rand_stream = RandStream(sim_params.random_generator, ...
         'Seed', sim_params.random_seed);

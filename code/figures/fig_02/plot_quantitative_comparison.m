@@ -179,8 +179,9 @@ end
 valid_idx = sum(~isnan(r_eff_mri_values_per_sub),2) >= 3; 
 r_eff_mri_mean_values = mean(r_eff_mri_values_per_sub, 2, 'omitnan');
 r_eff_histo_mean_values = r_eff_reference_in_vivo';
-r_eff_mri_mean_values = r_eff_mri_mean_values(valid_idx);
-r_eff_histo_mean_values = r_eff_histo_mean_values(valid_idx);
+% r_eff_mri_mean_values = r_eff_mri_mean_values(valid_idx);
+% r_eff_histo_mean_values = r_eff_histo_mean_values(valid_idx);
+r_eff_mri_mean_values(~valid_idx) = nan;
 
 
 %% ex-vivo dMRI experiments
@@ -233,6 +234,8 @@ for roi_index = 1:length(roi_mask_fstructs)
         mri_effective_radii_roi_median;
 end
 
+% remove G1 as it wasnt scanned with ex-vivo dMRI
+ex_vivo_table = ex_vivo_table(ex_vivo_table.roi_id ~= "G1",:);
 
 %% plots
 % set up figure

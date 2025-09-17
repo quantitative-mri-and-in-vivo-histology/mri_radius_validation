@@ -65,6 +65,13 @@ for region_id_prefix_index = 1:length(region_id_prefixes)
     end
 end
 
+% Compute inter-donor differences
+donor_diff = region_r_effs(:,1)-region_r_effs(:,2);
+donor_diff_mean = mean(donor_diff);
+donor_diff_std = std(donor_diff);
+donor_diff_norm = donor_diff ./ mean(region_r_effs,2); % region-wise % difference
+donor_diff_mean_norm = mean(donor_diff_norm);
+donor_diff_std_norm = std(donor_diff_norm);
 
 %% plot results
 % set up subplots

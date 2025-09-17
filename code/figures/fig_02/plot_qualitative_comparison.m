@@ -223,9 +223,8 @@ omm_x_midslice_index = roi_info_table.omm_voxel_x(1);
 in_vivo_mask = squeeze(cc_atlas_mask(omm_x_midslice_index,:,:) > 0);
 plot_omm_z_idx = 83:162;
 plot_omm_y_idx = 67:103;
-clims_in_vivo = [1 3.5];
-clims_ex_vivo = ...
-    clims_in_vivo./tissue_params_in_vivo.histology_scaling_factor;
+clims = [0.7, 3.5];
+cbar_ticks = 1:0.5:3.5;
 cc_mask_plot = in_vivo_mask ...
     & squeeze(valid_voxels_mask(omm_x_midslice_index, :, :));
 cc_mask_plot = cc_mask_plot(plot_omm_z_idx,plot_omm_y_idx)';
@@ -360,11 +359,11 @@ for subject_index = 1:length(subject_ids)
     plot_pattern(current_ax, ...
         mean_r_eff_map_plot, ...
         cc_mask_plot, ...
-        clims_ex_vivo);
+        clims);
 end
 
 % add colorbar
-create_cbar(current_ax, clims_ex_vivo);
+create_cbar(current_ax, clims);
 
 % save figure
 print(gcf, '-dsvg', "qualitative_comparison_histology.svg");
@@ -386,32 +385,32 @@ current_ax = nexttile(t_ex_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_ex_vivo_histo_avg', ...
     cc_mask_plot, ...
-    clims_ex_vivo);
+    clims);
 
 % ex-vivo dMRI experiments histology
 current_ax = nexttile(t_ex_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_mri_experimental_ex_vivo', ...
     cc_mask_plot, ...
-    clims_ex_vivo);
+    clims);
 
 % ex-vivo dMRI simulation (idealized)
 current_ax = nexttile(t_ex_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_ex_vivo_sim_idealized_avg', ...
     cc_mask_plot, ...
-    clims_ex_vivo);
+    clims);
 
 % ex-vivo dMRI simulation (experiment-like)
 current_ax = nexttile(t_ex_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_ex_vivo_sim_experiment_like_avg', ...
     cc_mask_plot, ...
-    clims_ex_vivo);
+    clims);
 
 % add colorbar
-cb = create_cbar(current_ax, clims_ex_vivo);
-cb.Ticks = 1:0.5:2.5;
+cb = create_cbar(current_ax, clims);
+cb.Ticks = cbar_ticks;
 
 % save figure
 print(gcf, '-dsvg', "qualitative_comparison_ex_vivo.svg");
@@ -433,32 +432,32 @@ current_ax = nexttile(t_in_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_in_vivo_histo_avg', ...
     cc_mask_plot, ...
-    clims_in_vivo);
+    clims);
 
 % in-vivo dMRI experiments histology
 current_ax = nexttile(t_in_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_in_vivo_experiments_avg', ...
     cc_mask_plot, ...
-    clims_in_vivo);
+    clims);
 
 % in-vivo dMRI simulation (idealized)
 current_ax = nexttile(t_in_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_in_vivo_sim_idealized_avg', ...
     cc_mask_plot, ...
-    clims_in_vivo);
+    clims);
 
 % in-vivo dMRI simulation (experiment-like)
 current_ax = nexttile(t_in_vivo);
 plot_pattern(current_ax, ...
     r_eff_map_in_vivo_sim_experiment_like_avg', ...
     cc_mask_plot, ...
-    clims_in_vivo);
+    clims);
 
 % add colorbar
-cb = create_cbar(current_ax, clims_in_vivo);
-cb.Ticks = 1:0.5:3.5;
+cb = create_cbar(current_ax, clims);
+cb.Ticks = cbar_ticks;
 
 % save figure
 print(gcf, '-dsvg', "qualitative_comparison_in_vivo.svg");

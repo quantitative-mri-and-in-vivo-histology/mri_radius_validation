@@ -121,7 +121,7 @@ for snr_baseline_index = 1:length(opt.snr_factors)
                 'HandleVisibility', 'off'); 
           end
     end
-    xlabel("$g_{\mathrm{max}}$", 'Interpreter', 'latex');
+    xlabel("$g_{\mathrm{max}}$ [mT/m]", 'Interpreter', 'latex');
     ylabel("$\mathrm{R}$", 'Interpreter', 'latex');
     pbaspect([1.47 1 1]);
     ytick_vals = 0:0.1:1;
@@ -187,7 +187,7 @@ for snr_baseline_index = 1:length(opt.snr_factors)
                 'HandleVisibility', 'off'); 
           end
     end
-    xlabel("$g_{\mathrm{max}}$", 'Interpreter', 'latex');
+    xlabel("$g_{\mathrm{max}}$ [mT/m]", 'Interpreter', 'latex');
     ylabel("$\mathrm{NRMSE}~[\%]$", 'Interpreter', 'latex');
     pbaspect([1.47 1 1]);
     ytick_vals = 20:10:90;

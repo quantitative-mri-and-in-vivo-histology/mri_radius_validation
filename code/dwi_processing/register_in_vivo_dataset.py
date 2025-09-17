@@ -13,10 +13,10 @@ from dwi_processing.utils import run_command, smooth_masked
 
 def register_in_vivo_dataset(output_dir, subject=None):
     """
-    Registers in-vivo diffusion MRI data to MNI and histology space.
+    Registers in-vivo diffusion MRI data to OMM and histology space.
 
-    Images from native in-vivo dMRI space are mapped to MNI space. Histological
-    ROI locations are mapped to native in-vivo dMRI space, relying on MNI space
+    Images from native in-vivo dMRI space are mapped to OMM space. Histological
+    ROI locations are mapped to native in-vivo dMRI space, relying on OMM space
     as an intermediate spatial reference.
 
     Parameters
@@ -47,20 +47,20 @@ def register_in_vivo_dataset(output_dir, subject=None):
     else:
         subjects = glob.glob(os.path.join(mri_raw_data_path, "sub-*"))
 
-    # define mni template files
-    t1_mni_template_file = os.path.join(
+    # define OMM template files
+    t1_omm_template_file = os.path.join(
         mri_data_path, "templates/anat",
-        "space-MNI152NLin6Asym_T1w.nii.gz")
-    t1_mni_template_brain_mask_file = os.path.join(
+        "space-omm_T1w.nii.gz")
+    t1_omm_template_brain_mask_file = os.path.join(
         mri_data_path, "templates/masks",
-        "space-MNI152NLin6Asym_label-brain_mask.nii.gz")
-    fa_mni_template_file = os.path.join(
+        "space-omm_label-brain_mask.nii.gz")
+    fa_omm_template_file = os.path.join(
         mri_data_path, "templates/dwi",
-        "space-MNI152NLin6Asym_FA.nii.gz")
+        "space-omm_FA.nii.gz")
     corpus_callosum_mask_file = os.path.join(
         mri_data_path, "templates/masks",
-        "space-MNI152NLin6Asym_label-ccMid_mask.nii.gz")
-    bids_mni_id = "MNI152NLin6Asym"
+        "space-omm_label-ccMid_mask.nii.gz")
+    bids_omm_id = "omm"
 
     # load threshold definitions
     cc_eval_params_file = os.path.join(
@@ -96,108 +96,108 @@ def register_in_vivo_dataset(output_dir, subject=None):
             f"-mul {temp_file_prefix}_desc-brainMasked_FA.nii.gz"
         )
 
-        # register to MNI
+        # register to OMM
         run_command(
             f"antsRegistration --verbose 1 "
             f"--random-seed 0 "
             "--dimensionality 3 --float 0 --collapse-output-transforms 1 "
-            f"--output {temp_file_prefix}_from-native_to-{bids_mni_id}_ants "
+            f"--output {temp_file_prefix}_from-native_to-{bids_omm_id}_ants "
             "--interpolation BSpline[3] --use-histogram-matching 0 "
             "--winsorize-image-intensities [ 0.005,0.995 ] "
             # Rigid stage
             "--transform Rigid[ 0.1 ] "
             f"-x [ NULL,NULL ] "
             f"--metric MI[ "
-            f"{t1_mni_template_file}, "
+            f"{t1_omm_template_file}, "
             f"{t1_image_file}, "
             f"0.75, 32, Regular, 0.25 ] "
             f"--metric MI[ "
-            f"{fa_mni_template_file}, "
+            f"{fa_omm_template_file}, "
             f"{temp_file_prefix}_desc-brainMasked_FA.nii.gz, "
             f"0.25, 32, Regular, 0.25 ] "
-            "--convergence [ 3000x1500x750x375,1e-8,10 ] "
+            "--convergence [ 1000x500x250x100,1e-6,10 ] "
             "--shrink-factors 8x4x2x1 "
             "--smoothing-sigmas 3x2x1x0vox "
             # Affine stage
             "--transform Affine[ 0.1 ] "
             f"-x [ NULL,NULL ] "
             f"--metric MI[ "
-            f"{t1_mni_template_file}, "
+            f"{t1_omm_template_file}, "
             f"{t1_image_file}, "
             f"0.3, 32, Regular, 0.25 ] "
             f"--metric MI[ "
-            f"{fa_mni_template_file}, "
+            f"{fa_omm_template_file}, "
             f"{temp_file_prefix}_desc-brainMasked_FA.nii.gz, "
             f"0.7, 32, Regular, 0.25 ] "
-            "--convergence [ 3000x1500x750x375,1e-8,10 ] "
+            "--convergence [ 1000x500x250x100,1e-6,10 ] "
             "--shrink-factors 8x4x2x1 "
             "--smoothing-sigmas 3x2x1x0vox "
             # SyN (nonlinear) stage
             "--transform SyN[ 0.1,3,0 ] "
-            f"-x [ {t1_mni_template_brain_mask_file}, {t1_mask_file} ] "
+            f"-x [ {t1_omm_template_brain_mask_file}, {t1_mask_file} ] "
             f"--metric CC[ "
-            f"{t1_mni_template_file}, "
+            f"{t1_omm_template_file}, "
             f"{t1_image_file}, "
             f"0.2, 4 ] "
             f"--metric CC[ "
-            f"{fa_mni_template_file}, "
+            f"{fa_omm_template_file}, "
             f"{temp_file_prefix}_desc-brainMasked_FA.nii.gz, "
             f"0.8, 4 ] "
-            "--convergence [ 300x150x75x40,1e-7,10 ] "
+            "--convergence [ 100x70x50x20,1e-6,10 ] "
             "--shrink-factors 8x4x2x1 "
             "--smoothing-sigmas 3x2x1x0vox"
         )
         shutil.move(
             f"{temp_file_prefix}"
-            f"_from-native_to-{bids_mni_id}_ants0GenericAffine.mat",
+            f"_from-native_to-{bids_omm_id}_ants0GenericAffine.mat",
             f"{root_out_file_prefix}"
-            f"_from-native_to-{bids_mni_id}_affine.mat")
+            f"_from-native_to-{bids_omm_id}_affine.mat")
         shutil.move(
             f"{temp_file_prefix}"
-            f"_from-native_to-{bids_mni_id}_ants1Warp.nii.gz",
+            f"_from-native_to-{bids_omm_id}_ants1Warp.nii.gz",
             f"{root_out_file_prefix}"
-            f"_from-native_to-{bids_mni_id}_warp.nii.gz")
+            f"_from-native_to-{bids_omm_id}_warp.nii.gz")
         shutil.move(
             f"{temp_file_prefix}"
-            f"_from-native_to-{bids_mni_id}_ants1InverseWarp.nii.gz",
+            f"_from-native_to-{bids_omm_id}_ants1InverseWarp.nii.gz",
             f"{root_out_file_prefix}"
-            f"_from-{bids_mni_id}_to-native_warp.nii.gz")
+            f"_from-{bids_omm_id}_to-native_warp.nii.gz")
 
-        # transform FA to MNI space
-        fa_template_ants = ants.image_read(fa_mni_template_file)
+        # transform FA to OMM space
+        fa_template_ants = ants.image_read(fa_omm_template_file)
         fa_image_ants = ants.image_read(f"{dwi_out_file_prefix}_FA.nii.gz")
-        fa_image_ants_reg_to_mni = ants.apply_transforms(
+        fa_image_ants_reg_to_omm = ants.apply_transforms(
             fixed=fa_template_ants,
             moving=fa_image_ants,
             transformlist=[
                 f"{root_out_file_prefix}"
-                f"_from-native_to-{bids_mni_id}_warp.nii.gz",
+                f"_from-native_to-{bids_omm_id}_warp.nii.gz",
                 f"{root_out_file_prefix}"
-                f"_from-native_to-{bids_mni_id}_affine.mat"],
+                f"_from-native_to-{bids_omm_id}_affine.mat"],
             whichtoinvert=[False, False],
             interpolator="bSpline")
         ants.image_write(
-            fa_image_ants_reg_to_mni,
-            f"{dwi_out_file_prefix}_space-{bids_mni_id}_FA.nii.gz")
+            fa_image_ants_reg_to_omm,
+            f"{dwi_out_file_prefix}_space-{bids_omm_id}_FA.nii.gz")
 
-        # # transform effective radius to MNI space
+        # # transform effective radius to OMM space
         effective_radius_image_ants = ants.image_read(
             f"{dwi_out_file_prefix}_effectiveRadius.nii.gz"
         )
-        effective_radius_image_ants_reg_to_mni = ants.apply_transforms(
+        effective_radius_image_ants_reg_to_omm = ants.apply_transforms(
             fixed=fa_template_ants,
             moving=effective_radius_image_ants,
             transformlist=[
                 f"{root_out_file_prefix}"
-                f"_from-native_to-{bids_mni_id}_warp.nii.gz",
+                f"_from-native_to-{bids_omm_id}_warp.nii.gz",
                 f"{root_out_file_prefix}"
-                f"_from-native_to-{bids_mni_id}_affine.mat"],
+                f"_from-native_to-{bids_omm_id}_affine.mat"],
             whichtoinvert=[False, False],
             interpolator="bSpline")
         ants.image_write(
-            effective_radius_image_ants_reg_to_mni,
+            effective_radius_image_ants_reg_to_omm,
             f"{dwi_out_file_prefix}"
-            f"_space-{bids_mni_id}_effectiveRadius.nii.gz")
+            f"_space-{bids_omm_id}_effectiveRadius.nii.gz")
 
         # transform coarse corpus callosum mask to native space
         cc_mask_image_ants = ants.image_read(corpus_callosum_mask_file)
@@ -206,9 +206,9 @@ def register_in_vivo_dataset(output_dir, subject=None):
             moving=cc_mask_image_ants,
             transformlist=[
                 f"{root_out_file_prefix}"
-                f"_from-native_to-{bids_mni_id}_affine.mat",
+                f"_from-native_to-{bids_omm_id}_affine.mat",
                 f"{root_out_file_prefix}"
-                f"_from-{bids_mni_id}_to-native_warp.nii.gz"],
+                f"_from-{bids_omm_id}_to-native_warp.nii.gz"],
             whichtoinvert=[True, False],
             interpolator="nearestNeighbor")
         ants.image_write(
@@ -216,23 +216,23 @@ def register_in_vivo_dataset(output_dir, subject=None):
             f"{dwi_out_file_prefix}_label-ccMid_mask.nii.gz")
 
         # transform histology ROI locations to native space
-        mni_roi_coordinates_file = os.path.join(histology_data_path, "rawdata",
+        omm_roi_coordinates_file = os.path.join(histology_data_path, "rawdata",
                                                 "roiinfo.tsv")
         roi_info_df = pd.read_csv(
-            mni_roi_coordinates_file, sep="\t")
-        mni_roi_coordinates_df = roi_info_df[
-            ["mni_physical_x", "mni_physical_y", "mni_physical_z"]].rename(
-            columns={"mni_physical_x": "x", "mni_physical_y": "y",
-                     "mni_physical_z": "z"}
+            omm_roi_coordinates_file, sep="\t")
+        omm_roi_coordinates_df = roi_info_df[
+            ["omm_physical_x", "omm_physical_y", "omm_physical_z"]].rename(
+            columns={"omm_physical_x": "x", "omm_physical_y": "y",
+                     "omm_physical_z": "z"}
         )
         coords_phyiscal = ants.apply_transforms_to_points(
             dim=3,
-            points=mni_roi_coordinates_df,
+            points=omm_roi_coordinates_df,
             transformlist=[
                 f"{root_out_file_prefix}"
-                f"_from-native_to-{bids_mni_id}_warp.nii.gz",
+                f"_from-native_to-{bids_omm_id}_warp.nii.gz",
                 f"{root_out_file_prefix}"
-                f"_from-native_to-{bids_mni_id}_affine.mat"],
+                f"_from-native_to-{bids_omm_id}_affine.mat"],
             whichtoinvert=[False, False]
         )
         coords_voxel = np.zeros(
@@ -303,7 +303,7 @@ def register_in_vivo_dataset(output_dir, subject=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Register in-vivo MRI dataset to MNI space.")
+        description="Register in-vivo MRI dataset to OMM space.")
     parser.add_argument("--output_dir", type=str, required=True,
                         help="Path to the output directory.")
     parser.add_argument("--subject", type=str, default=None,

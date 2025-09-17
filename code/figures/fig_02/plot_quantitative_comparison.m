@@ -179,8 +179,6 @@ end
 valid_idx = sum(~isnan(r_eff_mri_values_per_sub),2) >= 3; 
 r_eff_mri_mean_values = mean(r_eff_mri_values_per_sub, 2, 'omitnan');
 r_eff_histo_mean_values = r_eff_reference_in_vivo';
-% r_eff_mri_mean_values = r_eff_mri_mean_values(valid_idx);
-% r_eff_histo_mean_values = r_eff_histo_mean_values(valid_idx);
 r_eff_mri_mean_values(~valid_idx) = nan;
 
 

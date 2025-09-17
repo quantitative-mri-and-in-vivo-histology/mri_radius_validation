@@ -109,7 +109,7 @@ for scaling_factor_index = 1:length(opt.scaling_factors)
                     opt.g_max_scanners(scanner_index)),...
                 'HandleVisibility', handle_visibility); 
         end
-        xlabel("$g_{\mathrm{max}}$", 'Interpreter', 'latex');
+        xlabel("$g_{\mathrm{max}}$ [mT/m]", 'Interpreter', 'latex');
         ylabel("$\mathrm{R}$", 'Interpreter', 'latex');
         pbaspect([1 1 1]);
         ytick_vals = 0:0.1:1;
@@ -164,7 +164,7 @@ for scaling_factor_index = 1:length(opt.scaling_factors)
                     opt.g_max_scanners(scanner_index)),...
                 'HandleVisibility', handle_visibility); 
         end
-        xlabel("$g_{\mathrm{max}}$", 'Interpreter', 'latex');
+        xlabel("$g_{\mathrm{max}}$ [mT/m]", 'Interpreter', 'latex');
         ylabel("$\mathrm{NRMSE}~[\%]$", 'Interpreter', 'latex');
         pbaspect([1 1 1]);
         ytick_vals = 20:10:90;

@@ -13,10 +13,10 @@ sim_params = get_default_simulation_parameters();
 cc_eval_params = jsondecode(fileread(...
     "../../../parameters/cc_evaluation_parameters.json"));
 
-% convert MNI coordinates to matlab's one-based indexing
-roi_info_table.mni_voxel_x = roi_info_table.mni_voxel_x + 1;
-roi_info_table.mni_voxel_y = roi_info_table.mni_voxel_y + 1;
-roi_info_table.mni_voxel_z = roi_info_table.mni_voxel_z + 1;
+% convert OMM coordinates to matlab's one-based indexing
+roi_info_table.omm_voxel_x = roi_info_table.omm_voxel_x + 1;
+roi_info_table.omm_voxel_y = roi_info_table.omm_voxel_y + 1;
+roi_info_table.omm_voxel_z = roi_info_table.omm_voxel_z + 1;
 
 
 %% in-vivo dMRI simulations
@@ -94,44 +94,44 @@ end
 
 %% in-vivo dMRI experiments
 subject_ids = unique(roi_info_table.subject_id);
-cc_atlas_mask_file_mni = fullfile(getenv("MRV_DATA_PATH"), ...
+cc_atlas_mask_file_omm = fullfile(getenv("MRV_DATA_PATH"), ...
     "mri_in_vivo/templates/masks", ...
-    "space-MNI152NLin6Asym_label-ccMid_mask.nii.gz");
-cc_atlas_mask_mni = niftiread(cc_atlas_mask_file_mni);
+    "space-omm_label-ccMid_mask.nii.gz");
+cc_atlas_mask_omm = niftiread(cc_atlas_mask_file_omm);
 
 in_vivo_processed_data_dir = fullfile(getenv("MRV_DATA_PATH"), ...
     "mri_in_vivo/processed");
 processed_subj_dir_fstructs = dir( ...
     fullfile(in_vivo_processed_data_dir, "sub*"));
 
-in_vivo_r_eff_images_mni = ...
-    nan([length(processed_subj_dir_fstructs), size(cc_atlas_mask_mni)]);
+in_vivo_r_eff_images_omm = ...
+    nan([length(processed_subj_dir_fstructs), size(cc_atlas_mask_omm)]);
 
 r_eff_mri_values_per_sub = ...
     zeros(height(roi_info_table), length(processed_subj_dir_fstructs));
 
-% read per-subject effective radius map in MNI space and segment CC
+% read per-subject effective radius map in OMM space and segment CC
 for subject_id_index = 1:length(processed_subj_dir_fstructs)
     subject_id = sscanf( ...
         processed_subj_dir_fstructs(subject_id_index).name, 'sub-%s');
 
     % read subject r_eff and FA images
-    r_eff_image_mni = niftiread(fullfile(in_vivo_processed_data_dir, ...
+    r_eff_image_omm = niftiread(fullfile(in_vivo_processed_data_dir, ...
         sprintf("sub-%s/dwi/" + ...
-        "sub-%s_space-MNI152NLin6Asym_effectiveRadius.nii.gz", ...
+        "sub-%s_space-omm_effectiveRadius.nii.gz", ...
         subject_id, subject_id)));
-    fa_image_mni =  niftiread(fullfile(in_vivo_processed_data_dir, ...
+    fa_image_omm =  niftiread(fullfile(in_vivo_processed_data_dir, ...
         sprintf("sub-%s/dwi/" + ...
-        "sub-%s_space-MNI152NLin6Asym_FA.nii.gz", ...
+        "sub-%s_space-omm_FA.nii.gz", ...
         subject_id, subject_id)));
 
     % set values outside corpus callosum to nan
     % exclude values outside corpus callosum
-    cc_mask_mni = cc_atlas_mask_mni > 0 ...
-        & fa_image_mni >= cc_eval_params.fa_min ...
-        & r_eff_image_mni >= cc_eval_params.r_eff_min;
-    r_eff_image_mni(~cc_mask_mni) = nan;
-    in_vivo_r_eff_images_mni(subject_id_index,:,:,:) = r_eff_image_mni;
+    cc_mask_omm = cc_atlas_mask_omm > 0 ...
+        & fa_image_omm >= cc_eval_params.fa_min ...
+        & r_eff_image_omm >= cc_eval_params.r_eff_min;
+    r_eff_image_omm(~cc_mask_omm) = nan;
+    in_vivo_r_eff_images_omm(subject_id_index,:,:,:) = r_eff_image_omm;
 
     r_eff_image_file_native = fullfile(processed_data_dir, ...
         sprintf("sub-%s/dwi/" + ...
@@ -170,49 +170,49 @@ for subject_id_index = 1:length(processed_subj_dir_fstructs)
 
 end
 
-n_valid_subjects = squeeze(sum(~isnan(in_vivo_r_eff_images_mni),1));
+n_valid_subjects = squeeze(sum(~isnan(in_vivo_r_eff_images_omm),1));
 valid_voxels_mask = n_valid_subjects >= 3;
 val_idx_rep = repmat(shiftdim(valid_voxels_mask, -1), ...
-    size(in_vivo_r_eff_images_mni,1), 1, 1, 1);
-in_vivo_r_eff_images_mni(~val_idx_rep) = nan;
-r_eff_image_mean_mni_in_vivo = squeeze( ...
-    mean(in_vivo_r_eff_images_mni, 1, 'omitnan'));
+    size(in_vivo_r_eff_images_omm,1), 1, 1, 1);
+in_vivo_r_eff_images_omm(~val_idx_rep) = nan;
+r_eff_image_mean_omm_in_vivo = squeeze( ...
+    mean(in_vivo_r_eff_images_omm, 1, 'omitnan'));
 
 
 %% generate spatial patterns across the corpus callosum for all modalities
 cc_atlas_mask_file = fullfile(getenv("MRV_DATA_PATH"), ...
     "mri_in_vivo/templates/masks", ...
-    "space-MNI152NLin6Asym_label-ccMid_mask.nii.gz");
+    "space-omm_label-ccMid_mask.nii.gz");
 cc_atlas_mask = niftiread(cc_atlas_mask_file);
-mni_x_midslice_index = roi_info_table.mni_voxel_x(1);
-in_vivo_mask = squeeze(cc_atlas_mask(mni_x_midslice_index,:,:) > 0);
-plot_mni_z_idx = 83:162;
-plot_mni_y_idx = 67:100;
+omm_x_midslice_index = roi_info_table.omm_voxel_x(1);
+in_vivo_mask = squeeze(cc_atlas_mask(omm_x_midslice_index,:,:) > 0);
+plot_omm_z_idx = 83:162;
+plot_omm_y_idx = 67:103;
 clims_in_vivo = [1 3.5];
 clims_ex_vivo = ...
     clims_in_vivo./tissue_params_in_vivo.histology_scaling_factor;
 cc_mask_plot = in_vivo_mask ...
-    & squeeze(valid_voxels_mask(mni_x_midslice_index, :, :));
-cc_mask_plot = cc_mask_plot(plot_mni_z_idx,plot_mni_y_idx)';
+    & squeeze(valid_voxels_mask(omm_x_midslice_index, :, :));
+cc_mask_plot = cc_mask_plot(plot_omm_z_idx,plot_omm_y_idx)';
 
 % interpolation function to generate corpus callosum patterns
-[xGrid, yGrid] = meshgrid(plot_mni_z_idx, ...
-    plot_mni_y_idx);
+[xGrid, yGrid] = meshgrid(plot_omm_z_idx, ...
+    plot_omm_y_idx);
 interpolate_cc = @(x, y, vals) ...
     griddata(x, y, vals, xGrid, yGrid, 'nearest')'; 
 
 % compute patterns per donor for in-vivo-like histology and dMRI
 % simulations
-pattern_size = [length(plot_mni_z_idx), length(plot_mni_y_idx)];
+pattern_size = [length(plot_omm_z_idx), length(plot_omm_y_idx)];
 
 % compute in-vivo across-subject mean pattern for dMRI experiments
 r_eff_map_in_vivo_experiments_avg = ...
-    squeeze(r_eff_image_mean_mni_in_vivo( ...
-        mni_x_midslice_index,plot_mni_z_idx,plot_mni_y_idx));
+    squeeze(r_eff_image_mean_omm_in_vivo( ...
+        omm_x_midslice_index,plot_omm_z_idx,plot_omm_y_idx));
 
 r_eff_map_in_vivo_experiments_per_subject = ...
-    squeeze(in_vivo_r_eff_images_mni( ...
-        :,mni_x_midslice_index,plot_mni_z_idx,plot_mni_y_idx));
+    squeeze(in_vivo_r_eff_images_omm( ...
+        :,omm_x_midslice_index,plot_omm_z_idx,plot_omm_y_idx));
 
 
 %% figure: histological patterns

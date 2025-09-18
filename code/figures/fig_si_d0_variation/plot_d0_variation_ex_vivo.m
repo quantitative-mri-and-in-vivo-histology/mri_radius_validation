@@ -1,7 +1,6 @@
 % ========================================================================
 % Investigate effect of realistic D0 variation on effective radius 
-% correlation with histology for optimal next-generation clinical scanner 
-% protocols.
+% correlation with histology for experimental ex-vivo dMRI protocol.
 % ========================================================================
 
 %% simulation

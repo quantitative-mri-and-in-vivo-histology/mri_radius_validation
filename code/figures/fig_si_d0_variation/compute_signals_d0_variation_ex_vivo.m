@@ -12,7 +12,7 @@ mr_protocol = MrProtocol.fromJsonFile(....
     "../../../parameters/mr_protocol_ex_vivo_experimental.json");
 
 d_0_step = 0.01;
-d_0_bin_centers = 0:d_0_step:5;
+d_0_bin_centers = 0:d_0_step:2.5;
 d_0_bin_edges = [d_0_bin_centers - d_0_step/2, d_0_bin_centers(end) + d_0_step/2];
 
 signal_per_r = zeros(length(d_0_bin_centers), ...
@@ -31,7 +31,7 @@ for d_0_index = 1:length(d_0_bin_centers)
         sim_params.r_bin_centers, ...
         mr_protocol, ...
         tissue_params_adjusted, ...
-        "signal_approximation", "gpa");
+        "signal_approximation", "matrix");
 end
 
 r_bin_centers = sim_params.r_bin_centers;

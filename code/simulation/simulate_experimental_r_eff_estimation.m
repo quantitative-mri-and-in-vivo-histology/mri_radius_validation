@@ -145,6 +145,7 @@ function [r_eff, s_powder_average] = simulate_experimental_r_eff_estimation( ...
     end
     
     s_powder_average = s_powder_average - options.f_im_estimate;
+    s_powder_average(s_powder_average<0) = 0;
 
     if mr_protocol.num_shells == 2
         % use analytical expression for estimation
